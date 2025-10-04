@@ -1,0 +1,79 @@
+import pandas as pd
+import streamlit as st
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.model_selection import train_test_split
+
+st.set_page_config(page_title="Diabetes Prediction", layout="wide")
+st.title("Diabetes Prediction")
+st.write("Esta aplicación utiliza un Clasificador de Árbol de Decisión para predecir la diabetes basándose en ciertos síntomas.")
+st.write("## Tabla de Datos")
+st.write("Los síntomas considerados son: 'Orinar con frecuencia', 'Cicatrización lenta', 'Pérdida de peso' y 'Fatiga extrema'.")
+
+# Define the data as per the image provided
+data = {
+    "Patient": [f"ø{i}" for i in range(1, 26)],
+    "Urinating often": ["No", "Yes", "No", "No", "No", "Yes", "No", "No", "Yes", "Yes",
+                        "Yes", "No", "No", "No", "Yes", "Yes", "Yes", "Yes", "No", "Yes",
+                        "No", "Yes", "No", "Yes", "No"],
+    "Slow Healing": ["Yes", "No", "No", "Yes", "No", "Yes", "No", "No", "Yes", "No",
+                     "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "No", "Yes",
+                     "Yes", "No", "Yes", "Yes", "Yes"],
+    "Weight Loss": ["Yes", "Yes", "Yes", "No", "Yes", "No", "Yes", "No", "No", "Yes",
+                    "Yes", "Yes", "Yes", "Yes", "No", "Yes", "Yes", "Yes", "Yes", "Yes",
+                    "Yes", "Yes", "Yes", "No", "Yes"],
+    "Extreme Fatigue": ["Yes", "No", "Yes", "No", "No", "Yes", "Yes", "No", "No", "Yes",
+                        "No", "Yes", "Yes", "Yes", "No", "No", "Yes", "Yes", "Yes", "Yes",
+                        "Yes", "Yes", "Yes", "Yes", "Yes"],
+    "Result": ["Positive", "Positive", "Positive", "Negative", "Negative", "Positive", "Negative",
+               "Negative", "Positive", "Positive", "Positive", "Positive", "Positive", "Positive",
+               "Negative", "Negative", "Positive", "Positive", "Negative", "Positive", "Positive",
+               "Negative", "Positive", "Positive", "Positive"]
+}
+
+# Create DataFrame
+df_diabetes = pd.DataFrame(data)
+#df_diabetes = pd.read_csv("/contents/datos_diabetes.csv")
+st.dataframe(df_diabetes)
+# Save to CSV
+#df.to_csv("datos_diabetes.csv", index=False)
+
+def indiscernibility(attr, table):
+    u_ind = {}  # un diccionario vacío para almacenar los elementos de la relación de indiscernibilidad (U/IND({conjunto de atributos}))
+    attr_values = []  # una lista vacía para almacenar los valores de los atributos
+
+    for i in table.index:
+        attr_values = []
+        for j in attr:
+            attr_values.append(table.loc[i, j])  # encontrar el valor de la tabla en la fila correspondiente y el atributo deseado y agregarlo a la lista attr_values
+
+        # convertir la lista en una cadena y verificar si ya es una clave en el diccionario
+        key = ''.join(str(k) for k in attr_values)
+
+        if key in u_ind:  # si la clave ya existe en el diccionario
+            u_ind[key].add(i)
+        else:  # si la clave aún no existe en el diccionario
+            u_ind[key] = set()
+            u_ind[key].add(i)
+
+    # Ordenar la relación de indiscernibilidad por la longitud de cada conjunto
+    u_ind_sorted = sorted(u_ind.values(), key=len, reverse=True)
+    return u_ind_sorted
+
+# Arbol de decisión
+
+df=df_diabetes
+# Encode the Yes/No values as 1 and 2
+df_encoded = df.replace({"Yes": 1, "No": 2})
+
+# Define feature columns and target
+feature_columns = ["Urinating often", "Slow Healing", "Weight Loss", "Extreme Fatigue"]
+X = df_encoded[feature_columns]
+y = df_encoded["Result"].replace({"Positive": 1, "Negative": 0})  # Encode 'Result' for binary classification
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create and train the Decision Tree classifier
+clf = DecisionTreeClassifier(random_state=42)
+clf.fit(X_train, y_train)
