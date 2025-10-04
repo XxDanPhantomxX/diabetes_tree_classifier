@@ -60,6 +60,69 @@ def indiscernibility(attr, table):
     u_ind_sorted = sorted(u_ind.values(), key=len, reverse=True)
     return u_ind_sorted
 
+################################################################
+# Agrupar pacientes por síntomas (relación de indiscernibilidad)
+
+patient_groups = indiscernibility(['Urinating often', 'Slow Healing', 'Weight Loss', 'Extreme Fatigue'], df_diabetes)
+
+grouped_dataframes = [df_diabetes.iloc[list(group)] for group in patient_groups]
+
+result_df = pd.concat(grouped_dataframes, keys=[f"Group {i+1}" for i in range(len(patient_groups))])
+
+result_df
+
+###################   Aproximación Superior   #############################
+
+def upper_approximation(R, X):  #We have to try to describe the knowledge in X with respect to the knowledge in R; both are LISTS OS SETS [{},{}]
+
+  u_approx = set()  #change to [] if you want the result to be a list of sets
+
+  #print("X : " + str(len(X)))
+  #print("R : " + str(len(R)))
+
+  for i in range(len(X)):
+    for j in range(len(R)):
+
+      if(R[j].intersection(X[i])):
+        u_approx.update(R[j]) #change to .append() if you want the result to be a list of sets
+
+  return u_approx
+
+
+###################   Aproximación Inferior   #############################
+
+def lower_approximation(R, X):  #We have to try to describe the knowledge in X with respect to the knowledge in R; both are LISTS OS SETS [{},{}]
+
+  l_approx = set()  #change to [] if you want the result to be a list of sets
+
+  #print("X : " + str(len(X)))
+  #print("R : " + str(len(R)))
+
+  for i in range(len(X)):
+    for j in range(len(R)):
+
+      if(R[j].issubset(X[i])):
+        l_approx.update(R[j]) #change to .append() if you want the result to be a list of sets
+
+  return l_approx
+
+##################################   Resultados   #######################################
+
+Lista = df_diabetes.columns
+R = indiscernibility(['Urinating often', 'Slow Healing', 'Weight Loss', 'Extreme Fatigue'], df_diabetes)
+X_diabetes_indices = [set(df_diabetes[df_diabetes['Result'] == 'Positive'].index.tolist())]
+L=lower_approximation(R, X_diabetes_indices)
+U=upper_approximation(R, X_diabetes_indices)
+P = (U - L)
+P = [P]
+
+groupeds_dataframes = [df_diabetes.iloc[list(group)] for group in P]
+
+results_df = pd.concat(groupeds_dataframes, keys=[f"Group {i+1}" for i in range(len(P))])
+
+results_df
+
+
 # Arbol de decisión
 
 df=df_diabetes
@@ -77,3 +140,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # Create and train the Decision Tree classifier
 clf = DecisionTreeClassifier(random_state=42)
 clf.fit(X_train, y_train)
+
+################################ Link for the code in Google Colab #######################################
+st.link_button("Open in Google Colab", "https://colab.research.google.com/drive/1zyWU-_bq86NlaodqM7Mb2rHUQNRhQaqN?usp=sharing")
