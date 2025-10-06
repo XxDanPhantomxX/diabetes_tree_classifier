@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 st.set_page_config(page_title="Diabetes Prediction", layout="wide")
 st.title("Diabetes Prediction")
 st.write("Esta aplicación utiliza un Clasificador de Árbol de Decisión para predecir la diabetes basándose en ciertos síntomas.")
-st.write("## Tabla de Datos")
+st.write("## Tabla de Datos 25 Pacientes")
 st.write("Los síntomas considerados son: 'Orinar con frecuencia', 'Cicatrización lenta', 'Pérdida de peso' y 'Fatiga extrema'.")
 
 # Define the data as per the image provided
@@ -69,7 +69,9 @@ grouped_dataframes = [df_diabetes.iloc[list(group)] for group in patient_groups]
 
 result_df = pd.concat(grouped_dataframes, keys=[f"Group {i+1}" for i in range(len(patient_groups))])
 
-result_df
+st.write("### Agrupados por síntomas similares (Relación de Indiscernibilidad)")
+st.write("Los pacientes se agrupan según la similitud en sus síntomas. Cada grupo representa un conjunto de pacientes que comparten las mismas respuestas a los síntomas considerados.")
+st.dataframe(result_df)
 
 ###################   Aproximación Superior   #############################
 
@@ -120,8 +122,9 @@ groupeds_dataframes = [df_diabetes.iloc[list(group)] for group in P]
 
 results_df = pd.concat(groupeds_dataframes, keys=[f"Group {i+1}" for i in range(len(P))])
 
-results_df
-
+st.write("### Zona Frontera Lista Completa (Posible diagnóstico incierto)")
+st.write("Los pacientes en esta sección presentan síntomas que los colocan en una zona de incertidumbre diagnóstica. Estos casos pueden requerir una evaluación médica más detallada para un diagnóstico preciso.")
+st.dataframe(results_df)
 
 # Arbol de decisión
 
@@ -135,7 +138,7 @@ X = df_encoded[feature_columns]
 y = df_encoded["Result"].replace({"Positive": 1, "Negative": 0})  # Encode 'Result' for binary classification
 
 # Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=35)
 
 # Create and train the Decision Tree classifier
 clf = DecisionTreeClassifier(random_state=42)
@@ -143,3 +146,22 @@ clf.fit(X_train, y_train)
 
 ################################ Link for the code in Google Colab #######################################
 st.link_button("Open in Google Colab", "https://colab.research.google.com/drive/1zyWU-_bq86NlaodqM7Mb2rHUQNRhQaqN?usp=sharing")
+
+################################ Quitando Variable de Perdida de Peso #######################################
+
+df=df_diabetes
+# Encode the Yes/No values as 1 and 2
+df_encoded = df.replace({"Yes": 1, "No": 2})
+
+# Define feature columns and target
+featurez_columns = ["Urinating often", "Slow Healing", "Extreme Fatigue"]
+X = df_encoded[featurez_columns]
+y = df_encoded["Result"].replace({"Positive": 1, "Negative": 0})  # Encode 'Result' for binary classification
+
+# Split the data into training and testing sets
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X1_train, X1_test, y1_train, y1_test = train_test_split(X, y, test_size=0.2, random_state=40)
+
+# Create and train the Decision Tree classifier
+clfz = DecisionTreeClassifier(random_state=42)
+clfz.fit(X1_train, y1_train)
