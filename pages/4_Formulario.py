@@ -7,17 +7,17 @@ st.title("Formulario de Diagnóstico Interactivo")
 st.write("Selecciona los síntomas del paciente para predecir el diagnóstico de diabetes.")
 
 # Mapeo consistente con el preprocesamiento (Yes->1, No->2)
-map_YN = {"Sí": 1, "No": 2}
+map_YN = {"Si": 1, "No": 2}
 class_names = ["Negativo", "Positivo"]  # 0 y 1 en el mapeo
 
 # --- Widgets de Streamlit ---
 col1, col2 = st.columns(2)
 with col1:
-    urin_val = st.selectbox("¿Orina con frecuencia? (Urinating often)", ["Sí", "No"])
-    weight_val = st.selectbox("¿Pérdida de peso? (Weight Loss)", ["Sí", "No"])
+    urin_val = st.selectbox("¿Orina con frecuencia? (Urinating often)", ["Si", "No"])
+    weight_val = st.selectbox("¿Pérdida de peso? (Weight Loss)", ["Si", "No"])
 with col2:
-    slow_val = st.selectbox("¿Cicatrización lenta? (Slow Healing)", ["Sí", "No"])
-    fat_val = st.selectbox("¿Fatiga extrema? (Extreme Fatigue)", ["Sí", "No"])
+    slow_val = st.selectbox("¿Cicatrización lenta? (Slow Healing)", ["Si", "No"])
+    fat_val = st.selectbox("¿Fatiga extrema? (Extreme Fatigue)", ["Si", "No"])
 
 # Botón para predecir
 if st.button("Predecir diagnóstico", type="primary"):
