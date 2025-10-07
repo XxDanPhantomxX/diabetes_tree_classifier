@@ -101,6 +101,23 @@ st.write("### Agrupados por síntomas similares (Relación de Indiscernibilidad)
 st.write("Los pacientes se agrupan según la similitud en sus síntomas. Cada grupo representa un conjunto de pacientes que comparten las mismas respuestas a los síntomas considerados.")
 st.dataframe(result_df)
 
+# Arbol de decisión
+
+df=df_diabetes
+# Encode the Yes/No values as 1 and 2
+df_encoded = df.replace({"Yes": 1, "No": 2})
+
+# Define feature columns and target
+feature_columns = selected_attrs
+X = df_encoded[feature_columns]
+y = df_encoded["Result"].replace({"Positive": 1, "Negative": 0})  # Encode 'Result' for binary classification
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=35)
+
+# Create and train the Decision Tree classifier
+clf = DecisionTreeClassifier(random_state=42)
+
 ###################   Aproximación Superior   #############################
 
 def upper_approximation(R, X):  #We have to try to describe the knowledge in X with respect to the knowledge in R; both are LISTS OS SETS [{},{}]
