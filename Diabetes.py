@@ -117,6 +117,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # Create and train the Decision Tree classifier
 clf = DecisionTreeClassifier(random_state=42)
+clf.fit(X_train, y_train)
 
 ###################   Aproximación Superior   #############################
 
