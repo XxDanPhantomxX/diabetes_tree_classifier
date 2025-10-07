@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from Diabetes import clfz, featurez_columns
+from Diabetes import clf, feature_columns
 
 st.title("Formulario de Diagnóstico Interactivo")
 
@@ -31,13 +31,13 @@ if st.button("Predecir diagnóstico", type="primary"):
     
     # Codificar Yes/No como 1/2
     row = {k: map_YN[v] for k, v in values_raw.items()}
-    X_new = pd.DataFrame([row], columns=featurez_columns)
+    X_new = pd.DataFrame([row], columns=feature_columns)
 
     # Predicción
-    y_pred = clfz.predict(X_new)[0]
+    y_pred = clf.predict(X_new)[0]
     
     # Probabilidades
-    p = clfz.predict_proba(X_new)[0]
+    p = clf.predict_proba(X_new)[0]
     
     # Render del resultado
     label = class_names[y_pred]
