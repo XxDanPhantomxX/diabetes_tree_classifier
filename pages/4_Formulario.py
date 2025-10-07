@@ -7,7 +7,7 @@ st.title("Formulario de Diagnóstico Interactivo")
 st.write("Selecciona los síntomas del paciente para predecir el diagnóstico de diabetes.")
 
 # Mapeo consistente con el preprocesamiento (Yes->1, No->2)
-map_YN = {"Yes": 1, "No": 2}
+map_YN = {"Sí": 1, "No": 2}
 class_names = ["Negativo", "Positivo"]  # 0 y 1 en el mapeo
 
 # --- Widgets de Streamlit ---
