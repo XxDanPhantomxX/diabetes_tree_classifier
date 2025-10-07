@@ -31,10 +31,13 @@ data = {
                "Negative", "Positive", "Positive", "Positive"]
 }
 
+
+
 # Create DataFrame
 df_diabetes = pd.DataFrame(data)
 #df_diabetes = pd.read_csv("/contents/datos_diabetes.csv")
-st.dataframe(df_diabetes)
+if st.checkbox("Mostrar datos"):
+  st.dataframe(df_diabetes)
 # Save to CSV
 #df.to_csv("datos_diabetes.csv", index=False)
 
@@ -63,7 +66,32 @@ def indiscernibility(attr, table):
 ################################################################
 # Agrupar pacientes por síntomas (relación de indiscernibilidad)
 
-patient_groups = indiscernibility(['Urinating often', 'Slow Healing', 'Weight Loss', 'Extreme Fatigue'], df_diabetes)
+# Permitir al usuario seleccionar qué síntomas usar para agrupar (checkboxes)
+st.write("## Selección de síntomas para agrupar pacientes")
+st.write("Marca los síntomas que quieres considerar al agrupar pacientes por indiscernibilidad:")
+
+col_a, col_b = st.columns(2)
+options = ["Urinating often", "Slow Healing", "Weight Loss", "Extreme Fatigue"]
+selected_attrs = []
+with col_a:
+  if st.checkbox("Urinating often", value=True):
+    selected_attrs.append("Urinating often")
+  if st.checkbox("Slow Healing", value=True):
+    selected_attrs.append("Slow Healing")
+with col_b:
+  if st.checkbox("Weight Loss", value=True):
+    selected_attrs.append("Weight Loss")
+  if st.checkbox("Extreme Fatigue", value=True):
+    selected_attrs.append("Extreme Fatigue")
+
+if not selected_attrs:
+  st.warning("Debe seleccionar al menos un síntoma. Se usarán todos por defecto.")
+  selected_attrs = options.copy()
+
+st.write(f"Sintomas seleccionados: {selected_attrs}")
+
+# Calcular los grupos usando los atributos seleccionados
+patient_groups = indiscernibility(selected_attrs, df_diabetes)
 
 grouped_dataframes = [df_diabetes.iloc[list(group)] for group in patient_groups]
 
@@ -129,7 +157,7 @@ st.dataframe(results_df)
 #################################### Lista Reducto #######################################4
 
 Lista = df_diabetes.columns
-R = indiscernibility(['Urinating often', 'Slow Healing', 'Extreme Fatigue'], df_diabetes)
+R = indiscernibility(selected_attrs, df_diabetes)
 X_diabetes_indices = [set(df_diabetes[df_diabetes['Result'] == 'Positive'].index.tolist())]
 L=lower_approximation(R, X_diabetes_indices)
 U=upper_approximation(R, X_diabetes_indices)
@@ -143,24 +171,6 @@ results_df = pd.concat(groupeds_dataframes, keys=[f"Group {i+1}" for i in range(
 st.write("### Zona Frontera Lista Reducto (Posible diagnóstico incierto)")
 st.write("Los pacientes en esta sección presentan síntomas que los colocan en una zona de incertidumbre diagnóstica. Estos casos pueden requerir una evaluación médica más detallada para un diagnóstico preciso.")
 st.dataframe(results_df)
-
-# Arbol de decisión
-
-df=df_diabetes
-# Encode the Yes/No values as 1 and 2
-df_encoded = df.replace({"Yes": 1, "No": 2})
-
-# Define feature columns and target
-feature_columns = ["Urinating often", "Slow Healing", "Weight Loss", "Extreme Fatigue"]
-X = df_encoded[feature_columns]
-y = df_encoded["Result"].replace({"Positive": 1, "Negative": 0})  # Encode 'Result' for binary classification
-
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=35)
-
-# Create and train the Decision Tree classifier
-clf = DecisionTreeClassifier(random_state=42)
-clf.fit(X_train, y_train)
 
 ################################ Link for the code in Google Colab #######################################
 st.link_button("Open in Google Colab", "https://colab.research.google.com/drive/1zyWU-_bq86NlaodqM7Mb2rHUQNRhQaqN?usp=sharing")
