@@ -1,6 +1,6 @@
 import streamlit as st
-st.title("Conclusiciones y Referencias")
-st.write("## Conclusiones")
+st.title("Conclusión y Referencias")
+st.write("## Conclusión")
 st.write("""
 - El modelo de Árbol de Decisión es efectivo para predecir la diabetes basándose en síntomas específicos.
 - La selección adecuada de características es crucial para mejorar la precisión del modelo.
