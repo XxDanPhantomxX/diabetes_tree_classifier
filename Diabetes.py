@@ -126,6 +126,24 @@ st.write("### Zona Frontera Lista Completa (Posible diagnóstico incierto)")
 st.write("Los pacientes en esta sección presentan síntomas que los colocan en una zona de incertidumbre diagnóstica. Estos casos pueden requerir una evaluación médica más detallada para un diagnóstico preciso.")
 st.dataframe(results_df)
 
+#################################### Lista Reducto #######################################4
+
+Lista = df_diabetes.columns
+R = indiscernibility(['Urinating often', 'Slow Healing', 'Extreme Fatigue'], df_diabetes)
+X_diabetes_indices = [set(df_diabetes[df_diabetes['Result'] == 'Positive'].index.tolist())]
+L=lower_approximation(R, X_diabetes_indices)
+U=upper_approximation(R, X_diabetes_indices)
+P = (U - L)
+P = [P]
+
+groupeds_dataframes = [df_diabetes.iloc[list(group)] for group in P]
+
+results_df = pd.concat(groupeds_dataframes, keys=[f"Group {i+1}" for i in range(len(P))])
+
+st.write("### Zona Frontera Lista Reducto (Posible diagnóstico incierto)")
+st.write("Los pacientes en esta sección presentan síntomas que los colocan en una zona de incertidumbre diagnóstica. Estos casos pueden requerir una evaluación médica más detallada para un diagnóstico preciso.")
+st.dataframe(results_df)
+
 # Arbol de decisión
 
 df=df_diabetes
